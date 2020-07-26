@@ -1,39 +1,31 @@
 <template>
-  <div class="container">
-    <v-alert class="alert" v-if="alert.show" :type="alert.type">{{
-      alert.message
-    }}</v-alert>
-  </div>
+  <div class="container"></div>
 </template>
 
 <script>
-import Repository from "@/services/repository";
+import Repository from '@/services/repository';
 
 export default {
   data() {
-    return {};
+    return {
+      api: new Repository()
+    };
   },
   methods: {
-    getAllUsers() {
-      this.api.getUsers().then(
-        (res) => {
-          this.$store.dispatch("setServices", res.data);
-        },
-        (error) => {
-          this.alert;
-          this.setAlert(true, "error", error.message);
-        }
-      );
-    },
+    async getFrames() {
+      const response = await this.api.getFrames();
+
+      console.log(response.data);
+    }
   },
   mounted() {
-    this.getAllUsers();
+    this.getFrames();
   },
   computed: {
     getUser() {
       return this.$store.getters.getUser;
-    },
-  },
+    }
+  }
 };
 </script>
 
