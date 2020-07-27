@@ -25,11 +25,10 @@
 </template>
 
 <script>
-import { Cards } from './Card';
 import { Drag, Drop } from 'vue-drag-drop';
 
 export default {
-  components: { Drag, Drop, Cards },
+  components: { Drag, Drop },
   props: ['list', 'handleDrop', 'title'],
   methods: {
     onDrop(list, arg) {
