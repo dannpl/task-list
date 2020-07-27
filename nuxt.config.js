@@ -1,22 +1,26 @@
+import { state } from './store';
+
+const styledVars = state().styledVars;
+
+console.log;
 
 export default {
-  mode: "universal",
+  mode: 'universal',
   /*
    ** Headers of the page
    */
   head: {
-    title: "Users Graph",
+    title: 'nTodo',
     meta: [
-      { charset: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { hid: "description", name: "description", content: "Users Graph" },
-    ],
-    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+      { charset: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { hid: 'description', name: 'description', content: 'nTodo' }
+    ]
   },
   /*
    ** Customize the progress-bar color
    */
-  loading: { color: "#fff" },
+  loading: { color: '#fff' },
   /*
    ** Global CSS
    */
@@ -24,11 +28,11 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: [],
+  plugins: ['@/plugins/drag-drop.js'],
   /*
    ** Nuxt.js dev-modules
    */
-  buildModules: ["@nuxtjs/vuetify"],
+  buildModules: ['@nuxtjs/vuetify'],
   /*
    ** Nuxt.js modules
    */
@@ -37,19 +41,7 @@ export default {
    ** vuetify module configuration
    ** https://github.com/nuxt-community/vuetify-module
    */
-  vuetify: {
-    customVariables: ["~/assets/variables.scss"],
-    theme: {
-      themes: {
-        light: {
-          primary: "#3f51b5",
-          secondary: "#b0bec5",
-          accent: "#8c9eff",
-          error: "#b71c1c",
-        },
-      },
-    },
-  },
+  vuetify: styledVars,
   /*
    ** Build configuration
    */
@@ -57,6 +49,6 @@ export default {
     /*
      ** You can extend webpack config here
      */
-    extend(config, ctx) {},
-  },
+    extend(config, ctx) {}
+  }
 };
