@@ -1,5 +1,5 @@
 <template>
-  <drop class="" @drop="onDrop(frame, ...arguments)">
+  <div>
     <v-card class="drop list">
       <div v-if="title === null" class="wrapper-input">
         <v-text-field v-model="frameName" class="input"></v-text-field>
@@ -17,51 +17,76 @@
         >
       </div>
 
-      <drag
-        v-for="(item, i) in frame"
-        class="drag"
-        :key="i"
-        :transfer-data="{ item: item, frame: frame, example: 'frames' }"
+      <draggable
+        v-model="tasks"
+        group="tasks"
+        @start="drag = true"
+        @end="drag = false"
+        @change="log"
       >
-        <v-card class="mx-auto card">
-          <v-card-text>
-            <p class="status" :style="{ color: item.open ? 'green' : 'red' }">
-              ●
-            </p>
-            <p class="title text--primary">
-              {{ item.title }}
-            </p>
-            <div class="desc text--primary">
-              {{ item.description }}
-            </div>
-          </v-card-text>
-        </v-card>
-      </drag>
+        <div class="drag" v-for="item in tasks" :key="item.id">
+          <v-card @click="editTask(item)" class="mx-auto card">
+            <v-card-text>
+              <p class="status" :style="{ color: item.open ? 'green' : 'red' }">
+                ●
+              </p>
+              <p class="title text--primary">
+                {{ item.title }}
+              </p>
+              <div class="desc text--primary">
+                {{ item.description }}
+              </div>
+            </v-card-text>
+          </v-card>
+        </div>
+      </draggable>
+
       <div v-if="title" @click="addNewTask()" class="addNew text--primary">
-        <v-icon class="icon-plus" @click="cancelNewFrame()">mdi-plus</v-icon>
+        <v-icon class="icon-plus">mdi-plus</v-icon>
         <span class="text--primary">Add new task</span>
       </div>
     </v-card>
-  </drop>
+  </div>
 </template>
 
 <script>
-import { Drag, Drop } from 'vue-drag-drop';
+import draggable from 'vuedraggable';
 
 export default {
-  components: { Drag, Drop },
+  components: { draggable },
   props: ['frame', 'handleDrop', 'title', 'new', 'id'],
   data() {
     return {
-      frameName: ''
+      frameName: '',
+      drag: false,
+      tasks: []
     };
+  },
+  mounted() {
+    this.tasks = this.frame;
   },
   methods: {
     onDrop(frame, arg) {
       this.$emit('handleDrop', { toList: frame, data: arg });
     },
+    log(a) {
+      console.log(a);
+    },
     saveNewFrame() {
       this.$emit('saveNewFrame', { title: this.frameName });
+    },
+    addNewTask() {
+      this.$emit('addNewTask', {
+        frameId: this.id,
+        frameTodoLength: this.frame.length
+      });
+    },
+    editTask(task) {
+      this.$emit('editTask', {
+        task: task,
+        frameId: this.id,
+        frameTodoLength: this.frame.length
+      });
     },
     cancelNewFrame() {
       this.$emit('cancelNewFrame');
@@ -142,7 +167,6 @@ export default {
 .drag {
   cursor: pointer;
   border-radius: 4px;
-  background-color: white;
 
   .card {
     margin-bottom: 15px;

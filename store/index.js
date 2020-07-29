@@ -4,7 +4,7 @@ const getDefaultState = () => {
     user: {},
     styledVars: {
       theme: {
-        dark: false,
+        dark: true,
         themes: {
           light: {
             primary: '#2196f3',

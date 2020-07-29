@@ -11,6 +11,11 @@ export const mutations = {
   SET_FRAMES(state, data) {
     state.frames = data;
   },
+  UPDATE_LIST(state, data) {
+    state = data.map((item, i) => {
+      item.order = i;
+    });
+  },
   ADD_NEW_FRAME(state, obj) {
     state.frames.push(obj);
   },
@@ -26,6 +31,9 @@ export const mutations = {
     const index = state.frames.findIndex(item => item.id === obj.id);
 
     state.frames.splice(index, 1);
+  },
+  CHANGE_TODO_ORDER(state, data) {
+    console.log(data);
   },
   resetState(state) {
     Object.assign(state, getDefaultState());
@@ -53,6 +61,12 @@ export const actions = {
   },
   deleteFrame({ commit }, obj) {
     commit('DELETE_FRAME', obj);
+  },
+  updateList({ commit }, data) {
+    commit('UPDATE_LIST', data);
+  },
+  changeTodoOrder({ commit }, data) {
+    commit('CHANGE_TODO_ORDER', data);
   },
   resetState({ commit }) {
     commit('resetState');

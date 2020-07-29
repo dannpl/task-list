@@ -7,21 +7,21 @@ export default class Repository {
 
   getFrames = async () => api.get(`/frames`);
 
-  createFrame = async (data) => api.post(`/frame`, data);
+  createFrame = async data => api.post(`/frame`, data);
 
-  editFrame = async (data) => api.put(`/frame`, data);
+  editFrame = async data => api.put(`/frame`, data);
 
-  deleteFrame = async (id) => api.delete(`/frame/${id}`);
+  deleteFrame = async id => api.delete(`/frame/${id}`);
 
   // **************************************** //
   //                   TODO                   //
   // **************************************** //
 
-  getTodoById = async (id) => api.get(`/todo/${id}`);
+  getTodoById = async id => api.get(`/todo/${id}`);
 
-  createTodo = async (data) => api.post(`/todo`, data);
+  createTodo = async data => api.post(`/todo`, data);
 
-  editTodo = async (id, data) => api.put(`/todo/${id}`, data);
+  editTodo = async data => api.put(`/todo`, data);
 
-  deleteTodo = async (id) => api.delete(`/todo/${id}`);
+  deleteTodo = async id => api.delete(`/todo/${id}`);
 }

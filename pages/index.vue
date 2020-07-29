@@ -1,20 +1,27 @@
 <template>
   <div class="container-dragDrop">
-    <div class="container-list" v-for="frame in frames" :key="frame.id">
-      <drop class="drop list" @drop="dropFrame(frame, ...arguments)">
-        <drag :transfer-data="{ frame: frame }">
-          <Frame
-            :title="frame.title"
-            :id="frame.id"
-            :frame="frame.todos"
-            @handleDrop="handleDrop"
-            @saveNewFrame="saveNewFrame"
-            @cancelNewFrame="cancelNewFrame"
-            @showEditFrame="setEditFrame"
-          ></Frame>
-        </drag>
-      </drop>
-    </div>
+    <draggable
+      class="drop list"
+      v-model="frames"
+      group="frames"
+      @start="drag = true"
+      @end="drag = false"
+    >
+      <div class="container-list" v-for="frame in frames" :key="frame.id">
+        <Frame
+          :title="frame.title"
+          :id="frame.id"
+          :frame="frame.todos"
+          @handleDrop="handleDrop"
+          @saveNewFrame="saveNewFrame"
+          @cancelNewFrame="cancelNewFrame"
+          @showEditFrame="setEditFrame"
+          @addNewTask="addNewTask"
+          @editTask="editTask"
+        ></Frame>
+      </div>
+    </draggable>
+
     <v-card
       v-if="
         (this.frames[this.frames.length - 1] &&
@@ -37,6 +44,15 @@
       @editFrame="editFrame"
     ></EditFrame>
 
+    <div v-if="showEditTask">
+      <EditTask
+        :task="currentTask"
+        @saveTask="saveTask"
+        @deleteTask="deleteTask"
+        @closeModal="showEditTask = false"
+      ></EditTask>
+    </div>
+
     <v-alert class="alert" v-if="alert.show" :type="alert.type">
       {{ alert.message }}
     </v-alert>
@@ -44,19 +60,23 @@
 </template>
 
 <script>
+import draggable from 'vuedraggable';
 import Repository from '@/services/repository';
 import Frame from '@/components/Frame';
+import EditTask from '@/components/EditTask';
 import EditFrame from '@/components/EditFrame';
-import { Drag, Drop } from 'vue-drag-drop';
 var _ = require('lodash');
 
 export default {
-  components: { Drag, Drop, Frame, EditFrame },
+  components: { draggable, Frame, EditFrame, EditTask },
   data() {
     return {
       api: new Repository(),
       showEditFrame: false,
+      showEditTask: false,
+      drag: false,
       currentFrame: {},
+      currentTask: {},
       alert: {
         show: false,
         type: 'success',
@@ -80,13 +100,8 @@ export default {
         todos: []
       });
     },
-    handleDrop({ toList, data }) {
-      const fromList = data.list;
-      if (fromList) {
-        toList.push(data.item);
-        fromList.splice(fromList.indexOf(data.item), 1);
-        toList.sort((a, b) => a > b);
-      }
+    handleDrop({ data, toList }) {
+      this.$store.dispatch('Frames/changeTodoOrder', { data, toList });
     },
     async saveNewFrame(data) {
       const response = await this.api.createFrame({
@@ -95,20 +110,6 @@ export default {
       });
 
       this.getFrames();
-    },
-    async dropFrame(old, newFrame) {
-      const frames = this.frames;
-      const temp = frames[old.order];
-      frames[old.order] = newFrame.frame;
-      frames[newFrame.frame.order] = temp;
-
-      if (old.order !== newFrame.frame.order) {
-        frames.map((frame, i) => {
-          this.api.editFrame({ ...frame, order: i });
-        });
-
-        this.getFrames();
-      }
     },
     cancelNewFrame(data) {
       this.$store.dispatch('Frames/cancelNewFrame');
@@ -143,6 +144,64 @@ export default {
         this.setAlert(true, 'error', 'Error to delete frame');
       }
     },
+    addNewTask(task) {
+      const data = {
+        frame_id: task.frameId,
+        frameTodoLength: task.frameTodoLength
+      };
+      this.currentTask = data;
+      this.showEditTask = true;
+    },
+    editTask(task) {
+      task.task.frameTodoLength = task.frameTodoLength;
+
+      this.currentTask = task.task;
+      this.showEditTask = true;
+    },
+    async saveTask(task) {
+      const data = {
+        title: task.form.title,
+        description: task.form.description,
+        id: task.task.id,
+        frame_id: task.task.frame_id,
+        open: task.form.open,
+        order: task.task.order || task.task.frameTodoLength
+      };
+
+      if (task.task.id) {
+        try {
+          await this.api.editTodo(data);
+
+          this.showEditTask = false;
+          this.setAlert(true, 'success', 'Task edited with success');
+        } catch {
+          this.setAlert(true, 'error', 'Error to edit task');
+        }
+      } else {
+        try {
+          await this.api.createTodo(data);
+
+          this.showEditTask = false;
+          this.setAlert(true, 'success', 'Task created with success');
+        } catch {
+          this.setAlert(true, 'error', 'Error to edit task');
+        }
+      }
+
+      this.getFrames();
+    },
+    async deleteTask() {
+      try {
+        const response = await this.api.deleteTodo(this.currentTask.id);
+
+        this.showEditTask = false;
+        this.setAlert(true, 'success', 'Task deleted with success');
+
+        this.getFrames();
+      } catch {
+        this.setAlert(true, 'error', 'Error to delete Task');
+      }
+    },
     setAlert(show, type, message) {
       this.alert = { show, type, message };
 
@@ -155,8 +214,17 @@ export default {
     this.getFrames();
   },
   computed: {
-    frames() {
-      return _.orderBy(this.$store.getters['Frames/getFrames'], 'order');
+    frames: {
+      get() {
+        return _.orderBy(this.$store.getters['Frames/getFrames'], 'order');
+      },
+      set(value) {
+        this.$store.dispatch('Frames/updateList', value);
+
+        value.map((frame, i) => {
+          this.api.editFrame({ ...frame, order: i });
+        });
+      }
     }
   },
   watch: {
@@ -178,6 +246,10 @@ export default {
     margin: 0px 8px;
     min-width: 282px;
     max-width: 282px;
+  }
+
+  .drop {
+    display: flex;
   }
 
   .addNew {
