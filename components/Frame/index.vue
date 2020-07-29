@@ -22,7 +22,7 @@
         group="tasks"
         @start="drag = true"
         @end="drag = false"
-        @change="log"
+        @change="changed"
       >
         <div class="drag" v-for="item in tasks" :key="item.id">
           <v-card @click="editTask(item)" class="mx-auto card">
@@ -51,6 +51,7 @@
 
 <script>
 import draggable from 'vuedraggable';
+var _ = require('lodash');
 
 export default {
   components: { draggable },
@@ -69,8 +70,12 @@ export default {
     onDrop(frame, arg) {
       this.$emit('handleDrop', { toList: frame, data: arg });
     },
-    log(a) {
-      console.log(a);
+    changed(item) {
+      this.$emit('handleDrop', {
+        item: item,
+        frameId: this.id,
+        newArray: this.tasks
+      });
     },
     saveNewFrame() {
       this.$emit('saveNewFrame', { title: this.frameName });
@@ -93,6 +98,13 @@ export default {
     },
     showEditFrame() {
       this.$emit('showEditFrame', { title: this.title, id: this.id });
+    }
+  },
+  watch: {
+    frame() {
+      if (this.tasks.length !== this.frame.length) {
+        this.tasks = _.orderBy(this.frame, 'order');
+      }
     }
   }
 };

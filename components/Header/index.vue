@@ -80,7 +80,10 @@ export default {
     };
   },
   mounted() {
-    this.isDark = this.getIsDark;
+    const isDarkStorage = localStorage.getItem('isDark');
+
+    this.isDark = isDarkStorage === 'true';
+    this.changeMode();
   },
   methods: {
     changeMode() {
@@ -88,6 +91,8 @@ export default {
         dark: this.isDark,
         vuetify: this.$vuetify
       });
+
+      localStorage.setItem('isDark', this.isDark);
     }
   },
   computed: {

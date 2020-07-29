@@ -1,9 +1,3 @@
-import { state } from './store';
-
-const styledVars = state().styledVars;
-
-console.log;
-
 export default {
   mode: 'universal',
   /*

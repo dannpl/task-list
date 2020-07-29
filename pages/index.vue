@@ -100,8 +100,8 @@ export default {
         todos: []
       });
     },
-    handleDrop({ data, toList }) {
-      this.$store.dispatch('Frames/changeTodoOrder', { data, toList });
+    handleDrop(data) {
+      this.$store.dispatch('Frames/changeTodoOrder', data);
     },
     async saveNewFrame(data) {
       const response = await this.api.createFrame({

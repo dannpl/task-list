@@ -1,3 +1,6 @@
+import Repository from './../../services/repository';
+
+const api = new Repository();
 // GLOBAL Module
 const getDefaultState = () => {
   return {
@@ -33,7 +36,24 @@ export const mutations = {
     state.frames.splice(index, 1);
   },
   CHANGE_TODO_ORDER(state, data) {
-    console.log(data);
+    state.frames.map(item => {
+      if (item.id === data.frameId) {
+        item.todos = data.newArray;
+      }
+    });
+
+    if (!data.item.added && !data.item.moved) return;
+
+    data.newArray.map((item, i) => {
+      const payload = item;
+
+      if (data.item.added) {
+        if (item.id === data.item.added.element.id)
+          payload.frame_id = data.frameId;
+      }
+
+      api.editTodo({ ...payload, order: i });
+    });
   },
   resetState(state) {
     Object.assign(state, getDefaultState());
