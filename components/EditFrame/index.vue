@@ -2,7 +2,7 @@
   <div class="text-center">
     <v-dialog @click:outside="closeModal" :value="dialog" width="500">
       <v-card>
-        <v-card-title class="headline grey lighten-2">
+        <v-card-title class="headline lighten-2">
           {{ frame.title }}
         </v-card-title>
 
@@ -78,10 +78,12 @@ export default {
     },
     deleteFrame(value) {
       this.dialogDelete = false;
+      this.frameName = '';
       if (value) this.$emit('deleteFrame', value);
     },
     editFrame() {
       this.$emit('editFrame', { title: this.frameName, id: this.frame.id });
+      this.frameName = '';
     }
   }
 };

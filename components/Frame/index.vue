@@ -1,45 +1,47 @@
 <template>
-  <drop class="drop list" @drop="onDrop(frame, ...arguments)">
-    <div v-if="!title" class="wrapper-input">
-      <v-text-field v-model="frameName" class="input"></v-text-field>
-      <v-icon dark class="circle-save" @click="saveNewFrame()"
-        >mdi-checkbox-marked-circle</v-icon
-      >
-      <v-icon dark class="circle-cancel" @click="cancelNewFrame()"
-        >mdi-close</v-icon
-      >
-    </div>
-    <div class="wrapper-title" v-if="title">
-      <p>{{ title }}</p>
-      <v-icon dark class="more" @click="showEditFrame()"
-        >mdi-dots-vertical</v-icon
-      >
-    </div>
+  <drop class="" @drop="onDrop(frame, ...arguments)">
+    <v-card class="drop list">
+      <div v-if="title === null" class="wrapper-input">
+        <v-text-field v-model="frameName" class="input"></v-text-field>
+        <v-icon dark class="circle-save" @click="saveNewFrame()"
+          >mdi-checkbox-marked-circle</v-icon
+        >
+        <v-icon dark class="circle-cancel" @click="cancelNewFrame()"
+          >mdi-close</v-icon
+        >
+      </div>
+      <div class="wrapper-title" v-if="title !== null">
+        <p class="text--primary">{{ title }}</p>
+        <v-icon dark class="more text--primary" @click="showEditFrame()"
+          >mdi-dots-vertical</v-icon
+        >
+      </div>
 
-    <drag
-      v-for="(item, i) in frame"
-      class="drag"
-      :key="i"
-      :transfer-data="{ item: item, frame: frame, example: 'frames' }"
-    >
-      <v-card class="mx-auto card">
-        <v-card-text>
-          <p class="status" :style="{ color: item.open ? 'green' : 'red' }">
-            ●
-          </p>
-          <p class="title text--primary">
-            {{ item.title }}
-          </p>
-          <div class="desc text--primary">
-            {{ item.description }}
-          </div>
-        </v-card-text>
-      </v-card>
-    </drag>
-    <div @click="addNewTask()" class="addNew">
-      <v-icon class="icon-plus" @click="cancelNewFrame()">mdi-plus</v-icon>
-      Add new task
-    </div>
+      <drag
+        v-for="(item, i) in frame"
+        class="drag"
+        :key="i"
+        :transfer-data="{ item: item, frame: frame, example: 'frames' }"
+      >
+        <v-card class="mx-auto card">
+          <v-card-text>
+            <p class="status" :style="{ color: item.open ? 'green' : 'red' }">
+              ●
+            </p>
+            <p class="title text--primary">
+              {{ item.title }}
+            </p>
+            <div class="desc text--primary">
+              {{ item.description }}
+            </div>
+          </v-card-text>
+        </v-card>
+      </drag>
+      <div v-if="title" @click="addNewTask()" class="addNew text--primary">
+        <v-icon class="icon-plus" @click="cancelNewFrame()">mdi-plus</v-icon>
+        <span class="text--primary">Add new task</span>
+      </div>
+    </v-card>
   </drop>
 </template>
 
@@ -78,7 +80,6 @@ export default {
   height: auto;
   border-radius: 4px;
   padding: 10px 12px 1px 12px;
-  background-color: rgb(244, 245, 247);
 
   .wrapper-input {
     display: flex;
@@ -116,6 +117,11 @@ export default {
 
   &:hover {
     background-color: #e5e5e5;
+
+    .icon-plus,
+    span {
+      color: rgba(0, 0, 0, 0.87) !important;
+    }
   }
 }
 
@@ -124,7 +130,6 @@ export default {
   justify-content: space-between;
   display: flex;
   .more {
-    color: #565656;
     margin-top: -12px;
     margin-right: -8px;
   }

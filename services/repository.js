@@ -7,8 +7,6 @@ export default class Repository {
 
   getFrames = async () => api.get(`/frames`);
 
-  getFrameById = async (id) => api.get(`/frame/${id}`);
-
   createFrame = async (data) => api.post(`/frame`, data);
 
   editFrame = async (data) => api.put(`/frame`, data);

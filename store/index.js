@@ -7,16 +7,22 @@ const getDefaultState = () => {
         dark: false,
         themes: {
           light: {
-            primary: '#3f51b5',
-            secondary: '#b0bec5',
-            accent: '#8c9eff',
-            error: '#b71c1c'
+            primary: '#2196f3',
+            secondary: '#f4f5f7',
+            accent: '#9c27b0',
+            error: '#f44336',
+            warning: '#ff9800',
+            info: '#00bcd4',
+            success: '#4caf50'
           },
           dark: {
-            primary: '#3f51b5',
-            secondary: '#b0bec5',
-            accent: '#8c9eff',
-            error: '#b71c1c'
+            primary: '#2196f3',
+            secondary: '#2196f3',
+            accent: '#9c27b0',
+            error: '#f44336',
+            warning: '#ff9800',
+            info: '#00bcd4',
+            success: '#4caf50'
           }
         }
       }

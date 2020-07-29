@@ -1,17 +1,21 @@
 <template>
   <div class="container-dragDrop">
     <div class="container-list" v-for="frame in frames" :key="frame.id">
-      <Frame
-        :title="frame.title"
-        :id="frame.id"
-        :frame="frame.todos"
-        @handleDrop="handleDrop"
-        @saveNewFrame="saveNewFrame"
-        @cancelNewFrame="cancelNewFrame"
-        @showEditFrame="setEditFrame"
-      ></Frame>
+      <drop class="drop list" @drop="dropFrame(frame, ...arguments)">
+        <drag :transfer-data="{ frame: frame }">
+          <Frame
+            :title="frame.title"
+            :id="frame.id"
+            :frame="frame.todos"
+            @handleDrop="handleDrop"
+            @saveNewFrame="saveNewFrame"
+            @cancelNewFrame="cancelNewFrame"
+            @showEditFrame="setEditFrame"
+          ></Frame>
+        </drag>
+      </drop>
     </div>
-    <div
+    <v-card
       v-if="
         (this.frames[this.frames.length - 1] &&
           this.frames[this.frames.length - 1].title) ||
@@ -20,9 +24,11 @@
       @click="addNewFrame()"
       class="addNew"
     >
-      <v-icon class="icon-plus" @click="cancelNewFrame()">mdi-plus</v-icon>
+      <v-icon class="icon-plus text--primary" @click="cancelNewFrame()"
+        >mdi-plus</v-icon
+      >
       Add new frame
-    </div>
+    </v-card>
     <EditFrame
       :dialog="showEditFrame"
       :frame="currentFrame"
@@ -30,6 +36,10 @@
       @deleteFrame="deleteFrame"
       @editFrame="editFrame"
     ></EditFrame>
+
+    <v-alert class="alert" v-if="alert.show" :type="alert.type">
+      {{ alert.message }}
+    </v-alert>
   </div>
 </template>
 
@@ -46,7 +56,12 @@ export default {
     return {
       api: new Repository(),
       showEditFrame: false,
-      currentFrame: {}
+      currentFrame: {},
+      alert: {
+        show: false,
+        type: 'success',
+        message: ''
+      }
     };
   },
   methods: {
@@ -55,7 +70,9 @@ export default {
         const response = await this.api.getFrames();
 
         this.$store.dispatch('Frames/setFrames', response.data.data);
-      } catch {}
+      } catch {
+        this.setAlert(true, 'error', 'Error');
+      }
     },
     addNewFrame() {
       this.$store.dispatch('Frames/addNewFrame', {
@@ -74,10 +91,24 @@ export default {
     async saveNewFrame(data) {
       const response = await this.api.createFrame({
         title: data.title,
-        order: this.frames.length
+        order: this.frames.length - 1
       });
 
       this.getFrames();
+    },
+    async dropFrame(old, newFrame) {
+      const frames = this.frames;
+      const temp = frames[old.order];
+      frames[old.order] = newFrame.frame;
+      frames[newFrame.frame.order] = temp;
+
+      if (old.order !== newFrame.frame.order) {
+        frames.map((frame, i) => {
+          this.api.editFrame({ ...frame, order: i });
+        });
+
+        this.getFrames();
+      }
     },
     cancelNewFrame(data) {
       this.$store.dispatch('Frames/cancelNewFrame');
@@ -93,7 +124,10 @@ export default {
         this.$store.dispatch('Frames/editFrame', data);
 
         this.showEditFrame = false;
-      } catch {}
+        this.setAlert(true, 'success', 'Saved with success');
+      } catch {
+        this.setAlert(true, 'error', 'Error to edit frame');
+      }
     },
     async deleteFrame() {
       try {
@@ -104,13 +138,28 @@ export default {
         });
 
         this.showEditFrame = false;
-      } catch {}
+        this.setAlert(true, 'success', 'Frame deleted with success');
+      } catch {
+        this.setAlert(true, 'error', 'Error to delete frame');
+      }
+    },
+    setAlert(show, type, message) {
+      this.alert = { show, type, message };
+
+      setTimeout(() => {
+        this.alert.show = false;
+      }, 1500);
     }
   },
   mounted() {
     this.getFrames();
   },
   computed: {
+    frames() {
+      return _.orderBy(this.$store.getters['Frames/getFrames'], 'order');
+    }
+  },
+  watch: {
     frames() {
       return _.orderBy(this.$store.getters['Frames/getFrames'], 'order');
     }
@@ -141,14 +190,23 @@ export default {
     height: 40px;
     border-radius: 4px;
     padding: 0px 12px 1px 12px;
-    background-color: rgb(244, 245, 247);
 
     &:hover {
       background-color: #e5e5e5;
+      color: rgba(0, 0, 0, 0.87) !important;
+
+      .icon-plus {
+        color: rgba(0, 0, 0, 0.87) !important;
+      }
     }
   }
 }
-.icon-plus {
-  color: #565656;
+.alert {
+  width: 44%;
+  position: fixed;
+  bottom: 50px;
+  left: 0px;
+  margin: auto;
+  right: 0px;
 }
 </style>
