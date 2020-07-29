@@ -26,6 +26,11 @@ export default {
   padding-left: 56px !important;
   height: calc(100vh - 48px);
 }
+
+.v-input__slot {
+  margin-bottom: 0 !important;
+}
+
 .v-label {
   font-size: 11px;
 }

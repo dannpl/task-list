@@ -1,11 +1,26 @@
 <template>
-  <drop class="drop list" @drop="onDrop(list, ...arguments)">
-    <p>{{ title }}</p>
+  <drop class="drop list" @drop="onDrop(frame, ...arguments)">
+    <div v-if="!title" class="wrapper-input">
+      <v-text-field v-model="frameName" class="input"></v-text-field>
+      <v-icon dark class="circle-save" @click="saveNewFrame()"
+        >mdi-checkbox-marked-circle</v-icon
+      >
+      <v-icon dark class="circle-cancel" @click="cancelNewFrame()"
+        >mdi-close</v-icon
+      >
+    </div>
+    <div class="wrapper-title" v-if="title">
+      <p>{{ title }}</p>
+      <v-icon dark class="more" @click="showEditFrame()"
+        >mdi-dots-vertical</v-icon
+      >
+    </div>
+
     <drag
-      v-for="(item, i) in list"
+      v-for="(item, i) in frame"
       class="drag"
       :key="i"
-      :transfer-data="{ item: item, list: list, example: 'lists' }"
+      :transfer-data="{ item: item, frame: frame, example: 'frames' }"
     >
       <v-card class="mx-auto card">
         <v-card-text>
@@ -21,6 +36,10 @@
         </v-card-text>
       </v-card>
     </drag>
+    <div @click="addNewTask()" class="addNew">
+      <v-icon class="icon-plus" @click="cancelNewFrame()">mdi-plus</v-icon>
+      Add new task
+    </div>
   </drop>
 </template>
 
@@ -29,10 +48,24 @@ import { Drag, Drop } from 'vue-drag-drop';
 
 export default {
   components: { Drag, Drop },
-  props: ['list', 'handleDrop', 'title'],
+  props: ['frame', 'handleDrop', 'title', 'new', 'id'],
+  data() {
+    return {
+      frameName: ''
+    };
+  },
   methods: {
-    onDrop(list, arg) {
-      this.$emit('handleDrop', { toList: list, data: arg });
+    onDrop(frame, arg) {
+      this.$emit('handleDrop', { toList: frame, data: arg });
+    },
+    saveNewFrame() {
+      this.$emit('saveNewFrame', { title: this.frameName });
+    },
+    cancelNewFrame() {
+      this.$emit('cancelNewFrame');
+    },
+    showEditFrame() {
+      this.$emit('showEditFrame', { title: this.title, id: this.id });
     }
   }
 };
@@ -41,10 +74,64 @@ export default {
 <style lang="scss" scoped>
 .list {
   width: 100%;
+  position: relative;
   height: auto;
   border-radius: 4px;
   padding: 10px 12px 1px 12px;
   background-color: rgb(244, 245, 247);
+
+  .wrapper-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: -6px;
+
+    .input {
+      max-width: 90%;
+      margin: 0px !important;
+      padding: 0px !important;
+    }
+
+    .circle-save {
+      color: #1dd037;
+      cursor: pointer;
+    }
+
+    .circle-cancel {
+      color: #ff0202;
+      cursor: pointer;
+    }
+  }
+}
+
+.addNew {
+  width: 100%;
+  display: flex;
+  margin-left: -5px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  align-items: center;
+  font-size: 13px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #e5e5e5;
+  }
+}
+
+.wrapper-title {
+  width: 100%;
+  justify-content: space-between;
+  display: flex;
+  .more {
+    color: #565656;
+    margin-top: -12px;
+    margin-right: -8px;
+  }
+}
+
+.v-icon.v-icon::after {
+  background-color: transparent !important;
 }
 
 .drag {

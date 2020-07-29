@@ -50,7 +50,7 @@ export const getters = {
 };
 
 export const actions = {
-  setServices({ commit }, obj) {
+  setUser({ commit }, obj) {
     commit('SET_USER', obj);
   },
   setDarkMode({ commit }, obj) {

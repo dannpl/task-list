@@ -11,7 +11,7 @@ export default class Repository {
 
   createFrame = async (data) => api.post(`/frame`, data);
 
-  editFrame = async (id, data) => api.put(`/frame/${id}`, data);
+  editFrame = async (data) => api.put(`/frame`, data);
 
   deleteFrame = async (id) => api.delete(`/frame/${id}`);
 

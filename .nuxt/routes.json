@@ -3,7 +3,6 @@
     "name": "index",
     "path": "/",
     "component": "/Users/danielcardoso/Documents/Workspace/todoList/pages/index.vue",
-    "chunkName": "pages/index",
-    "_name": "_0e881390"
+    "chunkName": "pages/index"
   }
 ]
