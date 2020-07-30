@@ -91,7 +91,7 @@ export default {
 
         this.$store.dispatch('Frames/setFrames', response.data.data);
       } catch {
-        this.setAlert(true, 'Error', 'Error to get frames');
+        this.setAlert(true, 'error', 'Error to get frames');
       }
     },
     addNewFrame() {
@@ -178,6 +178,7 @@ export default {
           await this.api.editTodo(data);
 
           this.showEditTask = false;
+          this.$store.dispatch('Frames/editTask', data);
           this.setAlert(true, 'success', 'Task edited with success');
         } catch {
           this.setAlert(true, 'error', 'Error to edit task');
@@ -187,13 +188,13 @@ export default {
           await this.api.createTodo(data);
 
           this.showEditTask = false;
+          this.$store.dispatch('Frames/editTask', data);
           this.setAlert(true, 'success', 'Task created with success');
+          this.getFrames();
         } catch {
           this.setAlert(true, 'error', 'Error to edit task');
         }
       }
-
-      this.getFrames();
     },
     async deleteTask() {
       try {

@@ -64,7 +64,7 @@ export default {
     };
   },
   mounted() {
-    this.tasks = this.frame;
+    this.tasks = _.orderBy(this.frame, 'order');
   },
   methods: {
     onDrop(frame, arg) {
@@ -102,9 +102,7 @@ export default {
   },
   watch: {
     frame() {
-      if (this.tasks.length !== this.frame.length) {
-        this.tasks = _.orderBy(this.frame, 'order');
-      }
+      this.tasks = _.orderBy(this.frame, 'order');
     }
   }
 };

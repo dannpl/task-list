@@ -30,6 +30,20 @@ export const mutations = {
       if (item.id === obj.id) item.title = obj.title;
     });
   },
+  EDIT_TASK(state, obj) {
+    state.frames.map(item => {
+      if (item.id === obj.frame_id) {
+        const temp = item.todos;
+        item.todos = [];
+        temp.map(todo => {
+          if (todo.id === obj.id) {
+            todo = obj;
+          }
+          item.todos.push(todo);
+        });
+      }
+    });
+  },
   DELETE_FRAME(state, obj) {
     const index = state.frames.findIndex(item => item.id === obj.id);
 
@@ -84,6 +98,9 @@ export const actions = {
   },
   updateList({ commit }, data) {
     commit('UPDATE_LIST', data);
+  },
+  editTask({ commit }, obj) {
+    commit('EDIT_TASK', obj);
   },
   changeTodoOrder({ commit }, data) {
     commit('CHANGE_TODO_ORDER', data);
