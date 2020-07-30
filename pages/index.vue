@@ -91,7 +91,7 @@ export default {
 
         this.$store.dispatch('Frames/setFrames', response.data.data);
       } catch {
-        this.setAlert(true, 'Error to get frames', 'Error');
+        this.setAlert(true, 'Error', 'Error to get frames');
       }
     },
     addNewFrame() {
