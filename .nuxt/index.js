@@ -13,7 +13,6 @@ import { createStore } from './store.js'
 /* Plugins */
 
 import nuxt_plugin_plugin_388fc29e from 'nuxt_plugin_plugin_388fc29e' // Source: ./vuetify/plugin.js (mode: 'all')
-import nuxt_plugin_dragdrop_09fd7503 from 'nuxt_plugin_dragdrop_09fd7503' // Source: ../plugins/drag-drop.js (mode: 'all')
 
 // Component: <ClientOnly>
 Vue.component(ClientOnly.name, ClientOnly)
@@ -191,10 +190,6 @@ async function createApp(ssrContext, config = {}) {
 
   if (typeof nuxt_plugin_plugin_388fc29e === 'function') {
     await nuxt_plugin_plugin_388fc29e(app.context, inject)
-  }
-
-  if (typeof nuxt_plugin_dragdrop_09fd7503 === 'function') {
-    await nuxt_plugin_dragdrop_09fd7503(app.context, inject)
   }
 
   // Lock enablePreview in context
