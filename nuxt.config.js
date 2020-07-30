@@ -26,7 +26,7 @@ export default {
   /*
    ** Plugins to load before mounting the App
    */
-  plugins: ['@/plugins/drag-drop.js'],
+  plugins: [],
   /*
    ** Nuxt.js dev-modules
    */
