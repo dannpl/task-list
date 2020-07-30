@@ -91,7 +91,7 @@ export default {
 
         this.$store.dispatch('Frames/setFrames', response.data.data);
       } catch {
-        this.setAlert(true, 'error', 'Error');
+        this.setAlert(true, 'Error to get frames', 'Error');
       }
     },
     addNewFrame() {
@@ -104,10 +104,15 @@ export default {
       this.$store.dispatch('Frames/changeTodoOrder', data);
     },
     async saveNewFrame(data) {
-      const response = await this.api.createFrame({
-        title: data.title,
-        order: this.frames.length - 1
-      });
+      try {
+        const response = await this.api.createFrame({
+          title: data.title,
+          order: this.frames.length - 1
+        });
+        this.setAlert(true, 'success', 'Saved with success');
+      } catch {
+        this.setAlert(true, 'error', 'Error to save frame');
+      }
 
       this.getFrames();
     },
